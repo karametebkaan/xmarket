@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketRank: a Markov solver for where money settles | Graph AI LLC</title>
+<meta name="description" content="MarketRank ranks stocks by the stationary probabilities of a Markov chain whose transition probabilities are estimated stock-to-stock money flows. Method, interface, honest results and the paper.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/favicon.svg" alt=""><span>Graph AI</span></a>
+    <ul>
+      <li class="hide-sm"><a href="index.html#what">What we do</a></li>
+      <li><a href="marketrank.html">MarketRank</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">MarketRank · Fluxscape</p>
+    <h1>Where does the market's money <span class="grad">settle</span>?</h1>
+    <p class="lead">Every trading day money leaves some stocks and moves into others. MarketRank models that as a Markov chain over stocks and ranks each one by the share of money that settles on it in the long run.</p>
+    <div class="btns">
+      <a class="btn primary" href="assets/marketrank-paper.pdf">Read the paper (PDF)</a>
+      <a class="btn ghost" href="#results">See the results</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap prose">
+    <h2>The idea in one equation</h2>
+    <p>Stocks are the states of a Markov chain. The chance of moving from stock <em>j</em> to stock <em>i</em> is the share of <em>j</em>'s outgoing dollars that goes to <em>i</em>. A stock's MarketRank is its stationary probability: where a dollar ends up after the flows have run for a long time.</p>
+    <div class="formula">r<sub>i</sub> = (1 − p) · Σ<sub>j</sub> r<sub>j</sub> · T<sub>j→i</sub> / Σ<sub>k</sub> T<sub>j→k</sub>  +  p / N,     p = 0.15</div>
+    <p>This is the same construction as PageRank, with dollars in place of hyperlinks. A stock ranks high when it receives a large share of what its senders give away, and when those senders themselves rank high. The rank is a property of the whole flow network, not of a stock's own trading volume. The score is shown as π·N, so 1 means an average stock.</p>
+
+    <h3>From public prices to a flow graph</h3>
+    <p>Trades are anonymous: the tape shows that a stock traded, not which stock the buyer sold to fund it. MarketRank therefore estimates the flows from public daily bars. Each stock's signed dollar pressure is paired, gravity-style, with the stocks that moved the other way, tilted toward the stocks it usually moves with. The result is a sparse transition matrix over 10,000 US stocks and ETFs, solved by damped power iteration in a deterministic parallel C++ engine.</p>
+
+    <h2>The interface</h2>
+    <p>The exact ranked table is always the reference. Around it, <strong>Fluxscape</strong> turns the chain into views you can read:</p>
+    <ul>
+      <li><strong>Landscape.</strong> Stocks are grouped into territories by the communities of the recent flow graph. The height and colour show π relative to size: red attracts more money than its size predicts, blue less.</li>
+      <li><strong>Sections</strong> (the default). The landscape is seen from above with a crosshair, and two profile charts cut through it, plotting every stock on the cut at its exact value.</li>
+      <li><strong>Paths.</strong> Any stock can be tracked over the whole history. You drag the chart to move through time, and several stocks can share one chart.</li>
+      <li><strong>The transition graph.</strong> A close-up of the chain itself around the tracked stocks. Each arrow carries the transition probability through which one stock passes its rank to another.</li>
+    </ul>
+    <figure>
+      <img src="assets/marketrank-ui.png" alt="MarketRank Fluxscape interface">
+      <figcaption>The interface on a real bar (2026-10-01). Centre: the Sections view. Right: the exact top 10, two tracked stocks over a year, and their transition graph.</figcaption>
+    </figure>
+    <figure>
+      <img src="assets/flow-graph.png" alt="Transition graph around MU and NVDA" style="max-width:520px">
+      <figcaption>The chain around MU and NVDA: their strongest flow partners and the flows among them. Arrows point from the stock money leaves to the stock it reaches.</figcaption>
+    </figure>
+
+    <h2 id="results">What we found, honestly</h2>
+    <p>The practical question is whether MarketRank can improve real portfolio moves. We fixed the tests in advance and report them as they came out.</p>
+    <table class="results">
+      <tr><th>Test</th><th>Result</th></tr>
+      <tr><td>Ten-year weekly walk-forward (2016–2026), after costs, against simply holding the portfolio</td><td>Not yet profitable: every configuration trailed buy-and-hold by 3–5% a year. One persistent effect, a short-term reversal in which today's hottest names do slightly worse, is real but small.</td></tr>
+      <tr><td>Estimated flows against observed institutional flows (SEC Form 13F, 39 quarters, 4,000–9,000 managers each)</td><td>The estimate gets roughly right <em>which</em> stocks send and receive money, and a little about <em>when</em>. It does not yet capture <em>who pairs with whom</em>.</td></tr>
+      <tr><td>How long do flow communities persist?</td><td>About as long as the flow window that defines them: half-life about a week on 20-day flows.</td></tr>
+    </table>
+    <p>The solver is sound. Its transition probabilities are only as good as the connectivity fed into it, and daily public bars carry size and a little timing, not pairing.</p>
+
+    <h3>What's next: learning the connectivity</h3>
+    <p>The transition-probability graph stays at the core. The current work learns the graph's connectivity, who funds whom, directly from market behaviour. A model learns the edges so that the chain built on them minimizes the error of next-week return forecasts. It is tested against graph-free and identity controls, under a protocol registered before any real data is used. Further routes are data that observe pairing more directly: ETF creation and redemption, signed intraday order flow, and 13F pairs mixed into the chain.</p>
+
+    <h2>Read more</h2>
+    <p>The method, engine, landscape pipeline, evaluation protocol and every result are in the paper: <a href="assets/marketrank-paper.pdf"><strong>MarketRank: ranking stocks by the stationary probabilities of a Markov chain over estimated money flows</strong></a> (B. Kaan Karamete, Graph AI LLC).</p>
+    <p>MarketRank is a research preview. For access or collaboration, <a href="index.html#contact">contact us</a>.</p>
+    <p class="note">MarketRank is research software. Nothing on this page is investment advice or a recommendation to buy or sell any security. Past and simulated results do not guarantee future performance.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Graph AI LLC</span>
+    <span><a href="index.html">Home</a> · <a href="index.html#contact">Contact</a></span>
+  </div>
+</footer>
+</body>
+</html>
