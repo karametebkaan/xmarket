@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>xgraph: a vendor-neutral graph workbench | Graph AI LLC</title>
+<meta name="description" content="xgraph puts one browser UI and one HTTP API in front of multiple graph engines: build, query, explain and visualize a graph through the same workflow on FalkorDB or Kinetica, with DuckDB or Kinetica for OLAP and Claude for natural language.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/favicon.svg" alt=""><span>Graph AI</span></a>
+    <ul>
+      <li class="hide-sm"><a href="index.html#what">What we do</a></li>
+      <li><a href="index.html#products">Products</a></li>
+      <li><a href="marketrank.html">MarketRank</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">xgraph · Open source</p>
+    <h1>One workbench for <span class="grad">every</span> graph engine.</h1>
+    <p class="lead">Each graph engine ships its own console, query dialect and loading tools. xgraph puts one browser UI and one HTTP API in front of them, so building, querying, explaining and visualizing a graph is the same workflow on any engine, driven from one screen instead of a terminal.</p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">View on GitHub</a>
+      <a class="btn ghost" href="#explain">See Explain in action</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap prose">
+    <figure>
+      <img src="assets/xgraph-visualize.jpg" alt="xgraph visualizing a 622,000-node graph, colored by label, with per-label breakdowns">
+      <figcaption>A 622,000-node graph rendered progressively, colored by node label, with per-label donut breakdowns.</figcaption>
+    </figure>
+
+    <h2>Three engine choices, picked independently</h2>
+    <p>In <strong>Setup</strong> you choose each one on its own. The gateway resolves the combination behind one API, so the frontend and every query stay engine-agnostic.</p>
+    <table class="results">
+      <tr><th>Choice</th><th>Options</th><th>What it does</th></tr>
+      <tr><td>Graph engine</td><td>Kinetica · FalkorDB</td><td>Stores the graph and runs the traversal (GQL or openCypher).</td></tr>
+      <tr><td>OLAP / ingest</td><td>Kinetica · DuckDB</td><td>Joins, aggregations, and reading Parquet, CSV and S3.</td></tr>
+      <tr><td>LLM</td><td>Claude</td><td>Natural language to query, natural language to SQL, and plain-English explanations.</td></tr>
+    </table>
+    <p><strong>FalkorDB + DuckDB + Claude</strong> is a fully on-premises route with no Kinetica. <strong>Kinetica + Kinetica</strong> is the validation baseline.</p>
+    <figure>
+      <img src="assets/xgraph-setup.png" alt="xgraph Setup panel: graph engine, OLAP engine and LLM chosen independently" style="max-width:640px">
+    </figure>
+
+    <h2>The workflow</h2>
+    <p>The action bar runs left to right:</p>
+    <ul>
+      <li><strong>Build.</strong> Create a graph from tables and files with a NODES/EDGES builder, or from documents: upload a PDF or text and the LLM extracts entities and relationships that merge into a named graph.</li>
+      <li><strong>List.</strong> The graphs on the connected engine, with node and edge counts and the SQL that built each one.</li>
+      <li><strong>Query.</strong> Ask in plain English, build with the Query Helper, or paste GQL/Cypher. Every route feeds one editor.</li>
+      <li><strong>Visualize.</strong> A progressive, paged render colored by node label, with label selection and breakdowns.</li>
+      <li><strong>Ontology.</strong> The live label and relationship schema, refreshed whenever the graph changes.</li>
+      <li><strong>Storage.</strong> The backing tables or source files, plus a recipe of how the graph was built.</li>
+    </ul>
+    <figure>
+      <img src="assets/xgraph-query.png" alt="Unified Query: a question turned into Cypher and a visualization of the returned paths">
+      <figcaption>Query: an <em>Ask</em> question becomes the Cypher below it, and the Visualization tab renders the returned paths.</figcaption>
+    </figure>
+
+    <h2 id="explain">Explain, with post-join hydration</h2>
+    <p>Wide node tables bloat graph-engine memory when every column becomes a node property. xgraph keeps the graph <em>skinny</em>, holding only identity and the columns a query filters on, and leaves attribute-rich columns in Parquet or CSV. After a traversal returns a small set of ids, a post-join fetches just those rows' attributes.</p>
+    <p>Run a suspicious-activity traversal, then ask Explain: <em>who has the most SAR activity, using the party name?</em> xgraph reads the Cypher to learn which column holds party ids, maps "party name" to the real attribute column, and runs a read-only DuckDB join over the Parquet file:</p>
+    <pre class="formula">SELECT w."party:party_name", COUNT(*) AS number_of_paths
+FROM cypher c JOIN wide w ON c.c_node = w.NODE
+GROUP BY 1 ORDER BY number_of_paths DESC</pre>
+    <p>It then turns the ranked result into a plain-English answer. The count is computed by DuckDB, not estimated by the model, so the ranking is deterministic for a given result.</p>
+    <figure>
+      <img src="assets/xgraph-explain-postjoin.png" alt="Explain tab: focus, generated post-join SQL and the ranked answer">
+    </figure>
+
+    <h2>Graphs from documents</h2>
+    <p><strong>Extract</strong> turns unstructured text into a graph with an open-ended ontology. Three things keep it clean as documents accumulate:</p>
+    <ul>
+      <li><strong>Label folding.</strong> Synonymous types collapse to one canonical label: "startup" and "firm" both become <code>Company</code>. The learned aliases are saved, so they cost nothing next time.</li>
+      <li><strong>Facets and axes.</strong> A node carries a label vector, such as <code>Company</code> on the EntityType axis and <code>AI</code> on the Industry axis, so classifications aren't lost.</li>
+      <li><strong>A provenance ledger.</strong> Every document is fingerprinted with sha256. Re-submitting the same bytes is a no-op, and the graph records which documents built it.</li>
+    </ul>
+    <figure>
+      <img src="assets/xgraph-ontology.png" alt="Ontology view: node labels and relationship types">
+      <figcaption>The Ontology view of a banking graph: 16 node labels and 15 relationship types.</figcaption>
+    </figure>
+
+    <h2>Try it</h2>
+    <pre class="formula">git clone https://github.com/karametebkaan/xgraph &amp;&amp; cd xgraph
+./scripts/unzip-data.sh                       # banking demo data
+cd backend &amp;&amp; python3 -m venv .venv &amp;&amp; ./.venv/bin/pip install -r requirements.txt
+cp .env.example .env &amp;&amp; cd ..
+docker run -p 6379:6379 -p 3000:3000 falkordb/falkordb:latest
+./xgraph start                                # UI + API on http://localhost:8090</pre>
+    <p>The full HTTP API, the extraction model and the developer notes are in the <a href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">README on GitHub</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Graph AI LLC</span>
+    <span><a href="marketrank.html">MarketRank</a> · <a href="xgraph.html">xgraph</a> · <a href="xvector.html">xVector</a> · <a href="index.html#contact">Contact</a></span>
+  </div>
+</footer>
+</body>
+</html>

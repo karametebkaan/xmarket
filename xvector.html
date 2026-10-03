@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>xVector: hidden relationships in document graphs | Graph AI LLC</title>
+<meta name="description" content="xVector is a kNN-based document entity and relationship extraction engine. A purely additive second pass uses top-k chunk embeddings and inverse-distance weighting to recover the ties between entities that no single sentence states. Paper: arXiv:2609.00387.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/favicon.svg" alt=""><span>Graph AI</span></a>
+    <ul>
+      <li class="hide-sm"><a href="index.html#what">What we do</a></li>
+      <li><a href="index.html#products">Products</a></li>
+      <li><a href="marketrank.html">MarketRank</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">xVector · Open source · arXiv:2609.00387</p>
+    <h1>The ties no sentence <span class="grad">states</span>.</h1>
+    <p class="lead">A language model asked to build a knowledge graph asserts only what a sentence says. Three paragraphs about one family can produce two disconnected components, because no single sentence names the tie between them. xVector adds a purely additive second pass that recovers those ties without touching what the extractor found.</p>
+    <div class="btns">
+      <a class="btn primary" href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener">Read the paper (arXiv)</a>
+      <a class="btn ghost" href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<section class="block">
+  <div class="wrap prose">
+    <h2>How the second pass works</h2>
+    <ul>
+      <li><strong>Chunk and embed once.</strong> Each document is split into paragraph chunks, and each chunk is embedded a single time.</li>
+      <li><strong>Search from the new chunks only.</strong> A top-<em>k</em> nearest-neighbour query starts from the new document's chunks but searches every chunk in the graph. The chunk pairs it returns expand, through a chunk-to-entity membership map, into candidate entity pairs.</li>
+      <li><strong>Score by inverse-distance weighting.</strong> Each entity pair is scored by Shepard inverse-distance weighting over every chunk pair its two entities co-occur in.</li>
+      <li><strong>Grow without recomputing.</strong> The per-pair accumulators form a commutative monoid, so the pass is order-independent and nothing is recomputed as the corpus grows.</li>
+      <li><strong>Engine-neutral.</strong> The same weighted edges go into FalkorDB, Kinetica, ArangoDB or Neo4j through one adapter contract.</li>
+    </ul>
+    <p>For a chunk pair with cosine similarity cos, the distance is d = 1 − cos. An entity pair's weight sums over all the chunk pairs it appears in:</p>
+    <pre class="formula">w = 1 / (ε + d),   v = (1 + cos) / 2,   ε = 10⁻⁶
+
+weight = Σ w·v / Σ w   ∈ (0, 1]</pre>
+    <p>Because only the two sums Σ w·v and Σ w are stored per pair, a new batch of documents just adds to them. The final weight is the same whatever order the documents arrive in.</p>
+
+    <h2>Two layers of edges</h2>
+    <p>The graph is a multigraph with two kinds of edges, because something stated and something inferred are different facts:</p>
+    <table class="results">
+      <tr><th>Layer</th><th>Where it comes from</th><th>Weight</th></tr>
+      <tr><td>Relation edges</td><td>Relations the LLM extracts and folds to a closed vocabulary: WORKS_AT, FOUNDED, LEADS, MEMBER_OF, LOCATED_IN, OWNS, and others.</td><td>1.0, since the text asserts them</td></tr>
+      <tr><td>Similarity edges (EMBEDDED)</td><td>The kNN and inverse-distance pass above. These connect entities that no sentence relates.</td><td>The inverse-distance score, in (0, 1]</td></tr>
+    </table>
+    <p>The same pair of entities can carry both. Entities are typed as People, Business, Organization, Facility or Location, and merged across documents by their name variants. People merge on surname and given initial, and businesses on their core name without suffixes like "Inc.", so each real entity becomes one node with its variants kept as aliases.</p>
+
+    <h2>Building a graph over time</h2>
+    <p><strong>Recreate</strong> builds a graph from a first batch of documents. <strong>Append</strong> adds new batches later: new entities merge with existing ones by blocking key, and edge weights keep accumulating. Before anything is written, the app shows the generated DDL and upsert SQL so every statement can be reviewed and edited.</p>
+    <p>Extraction runs on Claude or Gemini, or offline with a deterministic built-in embedder and a heuristic extractor. Embeddings can come from any OpenAI-compatible endpoint or from a local Ollama model.</p>
+
+    <h2>Try it</h2>
+    <pre class="formula">git clone https://github.com/karametebkaan/xVector &amp;&amp; cd xVector
+python3 scripts/serve.py        # then open http://localhost:8000</pre>
+    <p>Set <strong>Instance URL</strong> to <code>/kinetica</code>, paste paragraphs (the bundled <code>samples/kinetica-notes.txt</code> is a good first run), generate embeddings and store them. The app itself is one HTML file with no dependencies.</p>
+
+    <h3>Companion module: xMatch</h3>
+    <p>The repository also includes <code>xmatch/</code>, a separate identity-resolution module. It merges sparse name, email and phone records into golden records: DuckDB blocks the candidate pairs, fuzzy similarity scores them, and FalkorDB (GraphBLAS) resolves identities with connected components and multi-layer PageRank.</p>
+
+    <h2>Read more</h2>
+    <p>B. K. Karamete, H. Casten. <a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener"><strong>Hidden relationships in a document-derived property graph: top-k chunk embeddings and inverse-distance weighting over a dynamically evolving ontology</strong></a>. arXiv:2609.00387, 2026.</p>
+    <p>The full setup, the table schemas and the developer notes are in the <a href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener">README on GitHub</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Graph AI LLC</span>
+    <span><a href="marketrank.html">MarketRank</a> · <a href="xgraph.html">xgraph</a> · <a href="xvector.html">xVector</a> · <a href="index.html#contact">Contact</a></span>
+  </div>
+</footer>
+</body>
+</html>
