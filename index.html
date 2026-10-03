@@ -20,6 +20,7 @@
     <a class="brand" href="index.html"><img src="assets/favicon.svg" alt=""><span>Graph AI</span></a>
     <ul>
       <li class="hide-sm"><a href="#what">What we do</a></li>
+      <li><a href="#products">Products</a></li>
       <li><a href="marketrank.html">MarketRank</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -33,7 +34,7 @@
     <p class="lead">We build scalable graph analytics: parallel graph and Markov-chain solvers, spatio-temporal and network analysis, link prediction, and interactive views that make the structure of large connected systems readable.</p>
     <div class="btns">
       <a class="btn primary" href="marketrank.html">Explore MarketRank</a>
-      <a class="btn ghost" href="#what">What we do</a>
+      <a class="btn ghost" href="#products">Our products</a>
     </div>
   </div>
 </header>
@@ -53,7 +54,42 @@
   </div>
 </section>
 
-<section class="block alt" id="marketrank">
+<section class="block alt" id="products">
+  <div class="wrap">
+    <h2>Products</h2>
+    <p class="sub">Three engines built on one idea: data is a graph, and the answers are in its connections.</p>
+    <div class="grid3 products">
+      <a class="card product" href="marketrank.html">
+        <span class="tag">Research preview</span>
+        <h3>MarketRank</h3>
+        <p class="kicker">Markov transition-probability solver over money flows</p>
+        <p>Ranks 10,000 US stocks and ETFs by the stationary probability of a Markov chain over estimated stock-to-stock money flows, with the Fluxscape landscape, paths and transition-graph views.</p>
+        <span class="more">How it works →</span>
+      </a>
+      <a class="card product" href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">
+        <span class="tag tag-blue">Open source</span>
+        <h3>xgraph</h3>
+        <p class="kicker">Vendor-neutral knowledge graph framework</p>
+        <p>A graph workbench for building, querying and exploring knowledge graphs, independent of any one graph database vendor.</p>
+        <span class="more">github.com/karametebkaan/xgraph →</span>
+      </a>
+      <div class="card product">
+        <span class="tag tag-blue">Open source · arXiv</span>
+        <h3>xVector</h3>
+        <p class="kicker">kNN-based document entity and relationship extraction engine</p>
+        <p>A language model asked to build a knowledge graph asserts only what a sentence states, so related entities can end up disconnected. xVector adds a purely additive second pass: documents are split into paragraph chunks and embedded once, a top-<em>k</em> nearest-neighbour query yields chunk pairs, and Shepard inverse-distance weighting scores the hidden ties between the entities they mention. The pass is order-independent and needs no recomputation as the corpus grows, and it is engine-neutral: the same weighted edges go into FalkorDB, Kinetica, ArangoDB or Neo4j.</p>
+        <span class="more"><a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener">Paper: arXiv:2609.00387</a> · <a href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener">Code</a></span>
+      </div>
+    </div>
+    <h3 style="font: 700 18px var(--display); margin: 44px 0 6px;">Publications</h3>
+    <ul class="publications">
+      <li>B. K. Karamete, H. Casten. <a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener"><em>Hidden relationships in a document-derived property graph: top-k chunk embeddings and inverse-distance weighting over a dynamically evolving ontology</em></a>. arXiv:2609.00387, 2026 (cs.CE). (xVector)</li>
+      <li>B. K. Karamete. <a href="assets/marketrank-paper.pdf"><em>MarketRank: ranking stocks by the stationary probabilities of a Markov chain over estimated money flows, with a topological landscape view</em></a>. Graph AI LLC, 2026. (MarketRank)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="block" id="marketrank">
   <div class="wrap feature">
     <div>
       <span class="tag">Featured · Research preview</span>
@@ -69,7 +105,7 @@
         <a class="btn ghost" href="assets/marketrank-paper.pdf">Read the paper (PDF)</a>
       </div>
     </div>
-    <a class="shot" href="marketrank.html"><img src="assets/marketrank-ui.png" alt="The MarketRank Fluxscape interface: a landscape in the Sections view, the exact top-10 ranking, tracked stock paths and the transition graph"></a>
+    <div class="shot"><video src="assets/marketrank-demo.mp4" poster="assets/marketrank-ui.jpg" autoplay muted loop playsinline preload="metadata" aria-label="MarketRank in action: the landscape, ranking, paths and transition graph stepping through the last six months of bars"></video></div>
   </div>
 </section>
 
@@ -84,7 +120,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Graph AI LLC</span>
-    <span><a href="marketrank.html">MarketRank</a> · <a href="#contact">Contact</a></span>
+    <span><a href="marketrank.html">MarketRank</a> · <a href="https://github.com/karametebkaan/xgraph">xgraph</a> · <a href="https://github.com/karametebkaan/xVector">xVector</a> · <a href="index.html#contact">Contact</a></span>
   </div>
 </footer>
 </body>

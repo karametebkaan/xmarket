@@ -87,3 +87,17 @@ footer a { color: #c9cfdc; }
   .nav ul li.hide-sm { display: none; }
   .hero { padding: 72px 0 64px; }
 }
+
+/* products */
+.products .product { display: flex; flex-direction: column; color: inherit; transition: transform .15s, box-shadow .15s; }
+.products .product:hover { text-decoration: none; transform: translateY(-3px); box-shadow: 0 16px 36px rgba(20, 24, 33, .12); }
+.products .tag { align-self: flex-start; }
+.tag-blue { color: var(--blue); background: rgba(91, 140, 255, .12); }
+.kicker { font: 600 14px var(--sans); color: var(--ink) !important; margin: 0 0 10px !important; }
+.product .more { margin-top: auto; padding-top: 16px; font: 600 14px var(--sans); color: var(--blue); }
+.feature .shot video, video.demo { width: 100%; display: block; background: var(--navy); }
+video.demo { border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(15, 20, 32, .12); }
+.product .more a { color: var(--blue); }
+.products .card.product:not(a):hover { transform: none; }
+.publications { margin-top: 26px; font-size: 15px; color: var(--muted); }
+.publications li { margin: 6px 0; }
