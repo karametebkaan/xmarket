@@ -101,3 +101,10 @@ video.demo { border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 1
 .products .card.product:not(a):hover { transform: none; }
 .publications { margin-top: 26px; font-size: 15px; color: var(--muted); }
 .publications li { margin: 6px 0; }
+
+.product h3 a { color: var(--ink); }
+.product h3 a:hover { color: var(--blue); text-decoration: none; }
+.feature-stack { grid-template-columns: 1fr; gap: 0; }
+.feature-stack .sub, .feature-stack .ticks { max-width: 900px; }
+.shot-wide { margin-top: 36px; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 20, 32, .25); border: 1px solid #263047; }
+.shot-wide video { width: 100%; display: block; background: var(--navy); }

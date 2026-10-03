@@ -59,26 +59,24 @@
     <h2>Products</h2>
     <p class="sub">Three engines built on one idea: data is a graph, and the answers are in its connections.</p>
     <div class="grid3 products">
-      <a class="card product" href="marketrank.html">
+      <div class="card product">
         <span class="tag">Research preview</span>
-        <h3>MarketRank</h3>
+        <h3><a href="marketrank.html">MarketRank →</a></h3>
         <p class="kicker">Markov transition-probability solver over money flows</p>
         <p>Ranks 10,000 US stocks and ETFs by the stationary probability of a Markov chain over estimated stock-to-stock money flows, with the Fluxscape landscape, paths and transition-graph views.</p>
-        <span class="more">How it works →</span>
-      </a>
-      <a class="card product" href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">
+      </div>
+      <div class="card product">
         <span class="tag tag-blue">Open source</span>
-        <h3>xgraph</h3>
+        <h3><a href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">xgraph →</a></h3>
         <p class="kicker">Vendor-neutral knowledge graph framework</p>
-        <p>A graph workbench for building, querying and exploring knowledge graphs, independent of any one graph database vendor.</p>
-        <span class="more">github.com/karametebkaan/xgraph →</span>
-      </a>
+        <p>One browser UI and one HTTP API over multiple graph engines: build, query, explain and visualize a graph through the same workflow on any configured engine, instead of per-vendor consoles and one-off scripts.</p>
+      </div>
       <div class="card product">
         <span class="tag tag-blue">Open source · arXiv</span>
-        <h3>xVector</h3>
+        <h3><a href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener">xVector →</a></h3>
         <p class="kicker">kNN-based document entity and relationship extraction engine</p>
         <p>A language model asked to build a knowledge graph asserts only what a sentence states, so related entities can end up disconnected. xVector adds a purely additive second pass: documents are split into paragraph chunks and embedded once, a top-<em>k</em> nearest-neighbour query yields chunk pairs, and Shepard inverse-distance weighting scores the hidden ties between the entities they mention. The pass is order-independent and needs no recomputation as the corpus grows, and it is engine-neutral: the same weighted edges go into FalkorDB, Kinetica, ArangoDB or Neo4j.</p>
-        <span class="more"><a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener">Paper: arXiv:2609.00387</a> · <a href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener">Code</a></span>
+        <span class="more"><a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener">Paper: arXiv:2609.00387</a></span>
       </div>
     </div>
     <h3 style="font: 700 18px var(--display); margin: 44px 0 6px;">Publications</h3>
@@ -90,7 +88,7 @@
 </section>
 
 <section class="block" id="marketrank">
-  <div class="wrap feature">
+  <div class="wrap feature feature-stack">
     <div>
       <span class="tag">Featured · Research preview</span>
       <h2>MarketRank</h2>
@@ -105,7 +103,9 @@
         <a class="btn ghost" href="assets/marketrank-paper.pdf">Read the paper (PDF)</a>
       </div>
     </div>
-    <div class="shot"><video src="assets/marketrank-demo.mp4" poster="assets/marketrank-ui.jpg" autoplay muted loop playsinline preload="metadata" aria-label="MarketRank in action: the landscape, ranking, paths and transition graph stepping through the last six months of bars"></video></div>
+  </div>
+  <div class="wrap">
+    <div class="shot shot-wide"><video src="assets/marketrank-demo.mp4" poster="assets/marketrank-ui.jpg" autoplay muted loop playsinline preload="metadata" aria-label="MarketRank in action: the landscape, ranking, paths and transition graph stepping through the last six months of bars"></video></div>
   </div>
 </section>
 
