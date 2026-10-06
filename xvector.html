@@ -68,13 +68,24 @@ weight = Σ w·v / Σ w   ∈ (0, 1]</pre>
     <p><strong>Recreate</strong> builds a graph from a first batch of documents. <strong>Append</strong> adds new batches later: new entities merge with existing ones by blocking key, and edge weights keep accumulating. Before anything is written, the app shows the generated DDL and upsert SQL so every statement can be reviewed and edited.</p>
     <p>Extraction runs on Claude or Gemini, or offline with a deterministic built-in embedder and a heuristic extractor. Embeddings can come from any OpenAI-compatible endpoint or from a local Ollama model.</p>
 
-    <h2>Try it</h2>
+    <h2 id="run">Run it yourself</h2>
+    <p>The code is on GitHub: <a href="https://github.com/karametebkaan/xVector" target="_blank" rel="noopener"><strong>github.com/karametebkaan/xVector</strong></a>. The app is one HTML file plus a small Python server that uses only the standard library, so there is nothing to install.</p>
     <pre class="formula">git clone https://github.com/karametebkaan/xVector &amp;&amp; cd xVector
-python3 scripts/serve.py        # then open http://localhost:8000</pre>
-    <p>Set <strong>Instance URL</strong> to <code>/kinetica</code>, paste paragraphs (the bundled <code>samples/kinetica-notes.txt</code> is a good first run), generate embeddings and store them. The app itself is one HTML file with no dependencies.</p>
+python3 scripts/serve.py          # then open http://localhost:8181</pre>
+    <ol>
+      <li>Set <strong>Instance URL</strong> to <code>/kinetica</code>. The server proxies it to a Kinetica instance on <code>http://localhost:9191</code>; point it elsewhere with <code>--kinetica http://host:9191</code>, or serve on another port with <code>--port</code>.</li>
+      <li>Paste paragraphs (blank lines separate documents). <code>samples/kinetica-notes.txt</code> is a good first run.</li>
+      <li><strong>Generate embeddings</strong>, then <strong>Store</strong> them and build the graph. In <strong>Append</strong> mode, later batches merge into the same graph.</li>
+    </ol>
+    <p><strong>What you need:</strong> Python 3. Kinetica is needed for the Store and Search steps; without it, <strong>Copy SQL</strong> gives you the whole script to run elsewhere. Optional: Ollama for local embeddings, and Google Cloud credentials (Vertex AI) for Claude or Gemini extraction. The built-in embedder and extractor also work fully offline. Setup details are in <code>SETUP.md</code>.</p>
 
     <h3>Companion module: xMatch</h3>
     <p>The repository also includes <code>xmatch/</code>, a separate identity-resolution module. It merges sparse name, email and phone records into golden records: DuckDB blocks the candidate pairs, fuzzy similarity scores them, and FalkorDB (GraphBLAS) resolves identities with connected components and multi-layer PageRank.</p>
+    <pre class="formula">cd xmatch
+docker run -p 6379:6379 falkordb/falkordb:latest   # FalkorDB for the graph steps
+./setup.sh                                        # Python environment + UI packages
+./run.sh                                          # end-to-end demo in the terminal
+./start_ui.sh                                     # interactive UI on http://localhost:5173</pre>
 
     <h2>Read more</h2>
     <p>B. K. Karamete, H. Casten. <a href="https://arxiv.org/abs/2609.00387" target="_blank" rel="noopener"><strong>Hidden relationships in a document-derived property graph: top-k chunk embeddings and inverse-distance weighting over a dynamically evolving ontology</strong></a>. arXiv:2609.00387, 2026.</p>

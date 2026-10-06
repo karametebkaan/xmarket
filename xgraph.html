@@ -34,7 +34,7 @@
     <p class="lead">Each graph engine ships its own console, query dialect and loading tools. xgraph puts one browser UI and one HTTP API in front of them, so building, querying, explaining and visualizing a graph is the same workflow on any engine, driven from one screen instead of a terminal.</p>
     <div class="btns">
       <a class="btn primary" href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">View on GitHub</a>
-      <a class="btn ghost" href="#explain">See Explain in action</a>
+      <a class="btn ghost" href="#run">Run it yourself</a>
     </div>
   </div>
 </header>
@@ -97,13 +97,20 @@ GROUP BY 1 ORDER BY number_of_paths DESC</pre>
       <figcaption>The Ontology view of a banking graph: 16 node labels and 15 relationship types.</figcaption>
     </figure>
 
-    <h2>Try it</h2>
+    <h2 id="run">Run it yourself</h2>
+    <p>The code is on GitHub: <a href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener"><strong>github.com/karametebkaan/xgraph</strong></a>. It ships with a banking demo graph, so you can explore a real graph on first launch.</p>
     <pre class="formula">git clone https://github.com/karametebkaan/xgraph &amp;&amp; cd xgraph
 ./scripts/unzip-data.sh                       # banking demo data
 cd backend &amp;&amp; python3 -m venv .venv &amp;&amp; ./.venv/bin/pip install -r requirements.txt
 cp .env.example .env &amp;&amp; cd ..
 docker run -p 6379:6379 -p 3000:3000 falkordb/falkordb:latest
 ./xgraph start                                # UI + API on http://localhost:8090</pre>
+    <ol>
+      <li>Open <strong>http://localhost:8090</strong>. The gateway serves the UI itself.</li>
+      <li><strong>Setup:</strong> pick FalkorDB (or Kinetica) as the graph engine and DuckDB as the OLAP engine, enter the host and port, then <strong>Connect</strong>.</li>
+      <li><strong>List</strong> or <strong>Build</strong> a graph, then <strong>Query</strong>, <strong>Ask</strong>, <strong>Explain</strong> and <strong>Visualize</strong>.</li>
+    </ol>
+    <p><strong>What you need:</strong> Python 3 and Docker (for FalkorDB), or a Kinetica instance. Ask, Explain and Extract use Claude, through an Anthropic API key or the <code>claude</code> CLI. Stop the gateway with <code>./xgraph stop</code>.</p>
     <p>The full HTTP API, the extraction model and the developer notes are in the <a href="https://github.com/karametebkaan/xgraph" target="_blank" rel="noopener">README on GitHub</a>.</p>
   </div>
 </section>
