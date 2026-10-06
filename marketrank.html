@@ -34,7 +34,7 @@
     <p class="lead">Every trading day money leaves some stocks and moves into others. MarketRank models that as a Markov chain over stocks and ranks each one by the share of money that settles on it in the long run.</p>
     <div class="btns">
       <a class="btn primary" href="assets/marketrank-paper.pdf">Read the paper (PDF)</a>
-      <a class="btn ghost" href="#results">See the results</a>
+      <a class="btn ghost" href="#run">Run it yourself</a>
     </div>
   </div>
 </header>
@@ -79,9 +79,22 @@
     <h3>What's next: learning the connectivity</h3>
     <p>The transition-probability graph stays at the core. The current work learns the graph's connectivity, who funds whom, directly from market behaviour. A model learns the edges so that the chain built on them minimizes the error of next-week return forecasts. It is tested against graph-free and identity controls, under a protocol registered before any real data is used. Further routes are data that observe pairing more directly: ETF creation and redemption, signed intraday order flow, and 13F pairs mixed into the chain.</p>
 
+    <h2 id="run">Run it yourself</h2>
+    <p>The code is open source on GitHub: <a href="https://github.com/karametebkaan/marketrank" target="_blank" rel="noopener"><strong>github.com/karametebkaan/marketrank</strong></a>. It builds on Linux x86-64 with CMake ≥ 3.24, a C++20 compiler, and the OpenSSL and OpenMP development packages (Ubuntu: <code>sudo apt install build-essential cmake libssl-dev libomp-dev</code>). CMake downloads the rest, DuckDB included.</p>
+    <pre class="formula">git clone https://github.com/karametebkaan/marketrank &amp;&amp; cd marketrank
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release &amp;&amp; cmake --build build -j
+# demo market, no keys needed; open http://127.0.0.1:8765
+./build/marketrank --serve --mode synthetic</pre>
+    <p>For real US stocks and ETFs, add free <a href="https://alpaca.markets" target="_blank" rel="noopener">Alpaca</a> market-data keys to <code>.env</code> (copy <code>.env.example</code>), download the daily bars once, then open the interface over the cached data:</p>
+    <pre class="formula"># download the daily bars and solve (once)
+./build/marketrank --mode alpaca --universe-size 10000
+# the interface shown above, on http://127.0.0.1:8765
+./build/marketrank --serve --mode replay</pre>
+    <p>The README covers every option: rank tables, counterfactual shocks, the walk-forward evaluation and the 13F comparison.</p>
+
     <h2>Read more</h2>
     <p>The method, engine, landscape pipeline, evaluation protocol and every result are in the paper: <a href="assets/marketrank-paper.pdf"><strong>MarketRank: ranking stocks by the stationary probabilities of a Markov chain over estimated money flows</strong></a> (B. Kaan Karamete, Graph AI LLC).</p>
-    <p>MarketRank is a research preview. For access or collaboration, <a href="index.html#contact">contact us</a>.</p>
+    <p>MarketRank is a research preview, open source on <a href="https://github.com/karametebkaan/marketrank" target="_blank" rel="noopener">GitHub</a>. For collaboration, <a href="index.html#contact">contact us</a>.</p>
     <p class="note">MarketRank is research software. Nothing on this page is investment advice or a recommendation to buy or sell any security. Past and simulated results do not guarantee future performance.</p>
   </div>
 </section>
